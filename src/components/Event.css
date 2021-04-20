@@ -1,0 +1,41 @@
+.event {
+    display: flex;
+    background-color: lightblue;
+    padding: 15px;
+    margin: 30px;
+    width: 75%;
+    position: relative;
+}
+.img{
+    width: 50%;
+    min-width: 50%;
+}
+.img img{
+    max-width: 100%;
+    height: auto;
+    max-height: 200px;
+    min-height: 200px;
+}
+.eventtitle{
+    display: inline-flex;
+    margin: 0;
+    font-size: 2em;
+    text-align: left;
+    padding-left: 15px;
+    height: 100%;
+}
+
+.eventtype {
+    position: absolute;
+    font-size: 4em;
+    right: 10px;
+    top: px;
+    bottom: -5px;
+    color: white;
+    font-weight: bold;
+    z-index: 0;
+}
+
+.eventcountry {
+    margin-left: auto;
+}
