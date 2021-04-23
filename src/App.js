@@ -2,7 +2,7 @@ import './App.css';
 import React from 'react';
 
 
-import Search from './components/Search.js';
+//import Search from './components/Search.js';
 import EventList from './components/EventList';
 
 class App extends React.Component {
@@ -147,13 +147,14 @@ class App extends React.Component {
           {this.state.loaded === 3
             ?
               <div>
-                <Search 
+                {/* <Search
                   filtering={this.filter}
                   countries={this.state.countries} 
                   eventtypes={this.state.eventtypes}
-                  />
-                <EventList 
-                  filters={[this.state.search,this.state.sort,[this.state.stitle,this.state.stype,this.state.syear,this.state.scountry],this.state.sortorder]}
+                  />  */}
+                <EventList
+                  countries={this.state.countries} 
+                  eventtypes={this.state.eventtypes}
                   data={this.state.events}
                 />
               </div>
