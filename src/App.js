@@ -1,8 +1,7 @@
 import './App.css';
 import React from 'react';
+import axios from 'axios';
 
-
-//import Search from './components/Search.js';
 import EventList from './components/EventList';
 
 class App extends React.Component {
@@ -11,51 +10,62 @@ class App extends React.Component {
     this.state = {
        events: [],
        eventtypes: [],
-       countries: [],
-       loaded: 0,
-       today:'',
-       search: false,
-       sort: false,
-       stitle:"",
-       syear:"",
-       stype:"",
-       scountry:"",
-       sortorder:0
+       countries: []
        };
 
     this.showstate = this.showstate.bind(this);
-    this.filter = this.filter.bind(this);
+    this.getEvents = this.getEvents.bind(this);
   }
   componentDidMount() {
-    const axios = require('axios');
-    this.getEvents(axios);
-    this.getEventsTypes(axios);
-    this.getCountries(axios);
+    this.getEvents();
+    this.getEventsTypes();
+    this.getCountries();
     
   }
 
-  getEvents(ax){
-    return (
-      ax.get('https://api.coingecko.com/api/v3/events?upcoming_events_only=false')
+  getEvents(...args){
+    let request = "https://api.coingecko.com/api/v3/events?upcoming_events_only=false";
+    if(args.length > 1 ){
+      console.log(args)
+      //country
+      if(args[0] !== 0) {
+        request += '&country_code='+args[0]
+      }
+      //type
+      if(args[1] !== 0){
+        request += '&type='+args[1]
+      }
+      //year
+      if(args[2] !== 0){
+        request += '&from_date='+ args[2] +'-01-01&to_date='+ args[2]+'-12-31'
+      }
+      console.log(request)
+      return(
+        axios.get(request)
         .then((response) => {
           this.setState({ events: response.data.data })
-          this.setState((state) => ({
-            loaded: state.loaded +1
-          }))
+          console.log(this.state.events)
+        })
+        .catch(function (error) {
+          console.log(error);
+      })
+      )
+    }
+    return (
+      axios.get('https://api.coingecko.com/api/v3/events?upcoming_events_only=false')
+        .then((response) => {
+          this.setState({ events: response.data.data })
         })
         .catch(function (error) {
           console.log(error);
       })
     )
   }
-  getEventsTypes(ax){
+  getEventsTypes(){
     return (
-      ax.get('https://api.coingecko.com/api/v3/events/types')
+      axios.get('https://api.coingecko.com/api/v3/events/types')
       .then((response) => {
         this.setState({ eventtypes: response.data.data })
-        this.setState((state) => ({
-          loaded: state.loaded +1
-        }))
       })
       .catch(function (error) {
         console.log(error);
@@ -63,14 +73,11 @@ class App extends React.Component {
     )
   }
 
-  getCountries(ax){
+  getCountries(){
     return (
-      ax.get('https://api.coingecko.com/api/v3/events/countries')
+      axios.get('https://api.coingecko.com/api/v3/events/countries')
         .then((response) => {
           this.setState({ countries: response.data.data })
-          this.setState((state) => ({
-            loaded: state.loaded +1
-          }))
         })
         .catch(function (error) {
           console.log(error);
@@ -81,81 +88,19 @@ class App extends React.Component {
   showstate(){
       console.log(this.state);
   }
-  filter(e){
-      console.log(e);
-      console.log(e.id);
-      console.log(e.value);
-      switch(e.id) {
-        case 'title':
-              console.log(e.value);
-              this.setState(() => ({
-                stitle: e.value
-              }),() => 
-              this.state.search !== true ?  this.setState(() =>({
-                search:true
-              })) : null
-              )
-            
-          break;
-        case 'eventtypes':
-            console.log(e.value);
-            this.setState(() => ({
-              stype: e.value
-            }),() => 
-            this.state.search !== true ?  this.setState(() =>({
-              search:true
-            })) : null
-            )
-          
-          break;
-        case 'eventyear':
-            console.log(e.value);
-            this.setState(() => ({
-              syear: e.value
-            }),() => 
-            this.state.search !== true ?  this.setState(() =>({
-              search:true
-            })) : null
-            )
-          break;
-        case 'countries':
-            console.log(e.value);
-            this.setState(() => ({
-              scountry: e.value
-            }),() => 
-            this.state.search !== true ?  this.setState(() =>({
-              search:true
-            })) : null
-            )
-          
-          break;
-        default:
-          // code block
-      }
-      console.log(this.state.stitle + this.state.scountry + this.state.syear + this.state.stype);
-      console.log(this.state.stitle + this.state.scountry + this.state.syear + this.state.stype === "");
-      if(this.state.stitle + this.state.scountry + this.state.syear + this.state.stype === "" ){
-        this.setState(() =>({
-          search:false
-        }))
-      }
-  }
+  
   render(){
     return (
       <div className="App">
         <div>
-          {this.state.loaded === 3
+          {this.state.events.length > 0 && this.state.eventtypes.length > 0 && this.state.countries.length > 0
             ?
               <div>
-                {/* <Search
-                  filtering={this.filter}
-                  countries={this.state.countries} 
-                  eventtypes={this.state.eventtypes}
-                  />  */}
                 <EventList
                   countries={this.state.countries} 
                   eventtypes={this.state.eventtypes}
                   data={this.state.events}
+                  getMoreData={this.getEvents}
                 />
               </div>
             : <div>Loading .......</div>

@@ -45,9 +45,6 @@ let Search = (props) => {
     )
 }
 
-
-
-
 function EventList (props){
     const [events, setEvents] = React.useState(props.data);
     const [sorted, setSorted] = React.useState([]);
@@ -57,6 +54,7 @@ function EventList (props){
     const [scountry, setSCountry] = React.useState("");
     const [stype, setSType] = React.useState("");
     const [syear, setSYear] = React.useState("");
+    const [sort, setSort] = React.useState([]);
     
     const handleSTitle = event => {
       setSTitle(event.value);
@@ -70,14 +68,17 @@ function EventList (props){
     const handleSYear = event => {
       setSYear(event.value);
     };
-    
     useEffect(() => {
       const d = new Date();
       setToday(d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate());
+      
+      console.log("Mounted EventList"); 
     }, []);
   
      useEffect(() => {
-      let results = [];
+      let sortbis = [];
+      setEvents(props.data)
+      console.log(events)
       let filteredresult = events;
       if(stitle.length > 0){
         filteredresult = filteredresult.filter(event =>
@@ -88,25 +89,34 @@ function EventList (props){
         filteredresult = filteredresult.filter(event =>
           event.country.toLowerCase() === scountry.toLowerCase()
         );
+        sortbis[0] = scountry;
+      } else {
+        sortbis[0] = 0
       }
       if(stype.length > 0){
         filteredresult = filteredresult.filter(event =>
           event.type.toLowerCase() === stype.toLowerCase()
         );
+        sortbis[1] = stype;
+      } else {
+        sortbis[1] = 0
       }
       if(syear.length > 0){
         filteredresult = filteredresult.filter(event =>
           event.start_date.split('-')[0] === syear
         );
+        sortbis[2] = scountry;
+      } else {
+        sortbis[2] = 0
       }
-      results = filteredresult;
-
-      setSorted(results)
-      console.log(results)
-    }, [stitle , scountry , stype , syear , events]);
+      setSort(sortbis);
+      setSorted(filteredresult);
+    }, [stitle , scountry , stype , syear , props.data, events]);
     
     return(
       <div>
+
+        {console.log(props)}
         <Search  
           countries = {props.countries}
           eventtypes = {props.eventtypes}
@@ -116,12 +126,16 @@ function EventList (props){
           filterYear = {handleSYear}
         />
         {
+          
           sorted.map((data) =>
             <div key={data.title}>
               <Event data={data} day={today} />
             </div>
             )
         }
+        
+        <div onClick={() => {props.getMoreData(sort[0],sort[1],sort[2])}}>More Events</div>
+        
       </div>
     )
 }
